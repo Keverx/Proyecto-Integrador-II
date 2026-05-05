@@ -1,0 +1,6 @@
+[90m= [39m[34;4mApp\Models\Bin[39;24m {#7872
+    [34mcodigo_qr[39m: [32m"[39m[32mTACHO_V2[39m[32m"[39m,
+    [34mpin_actual[39m: [32m"[39m[32m1234[39m[32m"[39m,
+    [34mestado_operativo[39m: [32m"[39m[32mACTIVO[39m[32m"[39m,
+    [34mid_tacho[39m: [35m1[39m,
+  }
