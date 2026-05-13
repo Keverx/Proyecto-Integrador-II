@@ -11,7 +11,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Services\Contracts\AuthServiceInterface::class,
+            \App\Services\AuthService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\RecycleServiceInterface::class,
+            \App\Services\RecycleService::class
+        );
     }
 
     /**

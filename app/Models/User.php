@@ -21,6 +21,7 @@ class User extends Authenticatable
         'codigo_verificacion',
         'token_recuperacion',
         'estado_cuenta',
+        'id_rol',
     ];
 
     protected $hidden = [
@@ -55,5 +56,21 @@ class User extends Authenticatable
         $ingresos = $this->transacciones()->where('tipo_movimiento', 'INGRESO')->sum('monto');
         $egresos = $this->transacciones()->whereIn('tipo_movimiento', ['EGRESO', 'PENALIZACION'])->sum('monto');
         return $ingresos - $egresos;
+    }
+
+    /**
+     * Relación con la tabla roles
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'id_rol', 'id_rol');
+    }
+
+    /**
+     * Verifica si el usuario tiene un rol específico a través de la relación.
+     */
+    public function hasRole(string $role)
+    {
+        return $this->role && strtoupper($this->role->nombre) === strtoupper($role);
     }
 }

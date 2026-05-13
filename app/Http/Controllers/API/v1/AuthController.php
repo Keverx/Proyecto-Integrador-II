@@ -3,94 +3,53 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\LoginUserRequest;
+use App\Services\Contracts\AuthServiceInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Exception;
 
 class AuthController extends Controller
 {
-    // FUNCIÓN DE REGISTRO
-    public function register(Request $request)
+    protected $authService;
+    // DIP: Inyección de Dependencias
+    public function __construct(AuthServiceInterface $authService)
     {
-        // 1. Validamos los datos que vienen del formulario
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:usuarios', // No permite correos repetidos
-            'password' => 'required|string|min:6',
-        ]);
-
-        // 2. Creamos el usuario en la tabla 'usuarios'
-        // En la función register del AuthController.php
-        $user = User::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
-            'password_hash' => Hash::make($request->password),
-            'estado_cuenta' => 'PENDIENTE', // <--- Debe ser exactamente igual a tu ENUM
-        ]);
-
-        // 3. Generamos un token inicial
-        $tokenSession = Str::random(60);
-        $user->token_recuperacion = $tokenSession;
-        $user->save();
-
-        // 4. Respondemos con el éxito
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Usuario registrado con éxito',
-            'data' => [
-                'user_id' => $user->id_usuario,
-                'nombre' => $user->nombre,
-                'token' => $tokenSession
-            ]
-        ], 201); // 201 significa "Creado"
+        $this->authService = $authService;
     }
 
-    // FUNCIÓN DE LOGIN
-    public function login(Request $request)
+    public function register(RegisterUserRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password_hash)) {
+        try {
+            $data = $this->authService->registerUser($request->validated());
             return response()->json([
-                'status' => 'error',
-                'message' => 'Credenciales incorrectas'
-            ], 401);
+                'status' => 'success',
+                'message' => 'Usuario registrado con éxito',
+                'data' => $data
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
         }
+    }
 
-        $tokenSession = Str::random(60);
-        $user->token_recuperacion = $tokenSession;
-        $user->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => '¡Bienvenido a EcoScan!',
-            'data' => [
-                'user_id' => $user->id_usuario,
-                'nombre' => $user->nombre,
-                'puntos' => $user->puntos,
-                'token' => $tokenSession
-            ]
-        ]);
+    public function login(LoginUserRequest $request)
+    {
+        try {
+            $data = $this->authService->loginUser($request->validated());
+            return response()->json([
+                'status' => 'success',
+                'message' => '¡Bienvenido a EcoScan!',
+                'data' => $data
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);
+        }
     }
 
     public function profile(Request $request)
     {
-        // Buscamos al usuario que tenga el token que nos envían por la URL o Header
-        // Nota: Por ahora lo haremos simple buscando por el token que guardamos
-        $user = User::where('token_recuperacion', $request->token)->first();
-
-        if (!$user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Sesión no válida'
-            ], 401);
-        }
+        // Con auth:sanctum, Laravel ya validó el token e inyectó al usuario en $request
+        $user = $request->user();
 
         return response()->json([
             'status' => 'success',
