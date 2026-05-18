@@ -12,7 +12,6 @@ use Exception;
 class AuthController extends Controller
 {
     protected $authService;
-    // DIP: Inyección de Dependencias
     public function __construct(AuthServiceInterface $authService)
     {
         $this->authService = $authService;
@@ -48,7 +47,6 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
-        // Con auth:sanctum, Laravel ya validó el token e inyectó al usuario en $request
         $user = $request->user();
 
         return response()->json([

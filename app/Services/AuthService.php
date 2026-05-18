@@ -17,28 +17,20 @@ class AuthService implements AuthServiceInterface
             'password_hash' => Hash::make($data['password']),
             'estado_cuenta' => 'PENDIENTE',
         ]);
-
-        // Sanctum: Generar el token oficial
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return [
             'user_id' => $user->id_usuario,
             'nombre' => $user->nombre,
             'token' => $token
         ];
     }
-
     public function loginUser(array $credentials)
     {
         $user = User::where('email', $credentials['email'])->first();
-
         if (!$user || !Hash::check($credentials['password'], $user->password_hash)) {
             throw new Exception('Credenciales incorrectas', 401);
         }
-
-        // Sanctum: Generar el token oficial
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return [
             'user_id' => $user->id_usuario,
             'nombre' => $user->nombre,
