@@ -16,6 +16,7 @@ class AuthService implements AuthServiceInterface
             'email' => $data['email'],
             'password_hash' => Hash::make($data['password']),
             'estado_cuenta' => 'PENDIENTE',
+            'id_rol' => $data['id_rol'] ?? 1,
         ]);
         $token = $user->createToken('auth_token')->plainTextToken;
         return [
