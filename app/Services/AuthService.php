@@ -35,6 +35,8 @@ class AuthService implements AuthServiceInterface
         return [
             'user_id' => $user->id_usuario,
             'nombre' => $user->nombre,
+            'email' => $user->email,
+            'rol' => $user->id_rol == 2 ? 'ADMIN' : 'USER',
             'puntos' => $user->puntos,
             'token' => $token
         ];
