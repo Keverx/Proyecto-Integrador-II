@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Sembrar Tipos de Residuos (requeridos para el dashboard y el reciclaje)
+        // colocamos los Tipos de Residuos
         \App\Models\WasteType::firstOrCreate(
             ['nombre_residuo' => 'plastico'],
             ['puntos_otorgados' => 10, 'descripcion' => 'Botellas, envases y tapitas de plástico']
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             ['puntos_otorgados' => 15, 'descripcion' => 'Botellas, frascos y recipientes de vidrio']
         );
 
-        // Sembrar un Tacho (Bin) de prueba para escaneos e IoT
+        // añadimos un Tacho (Bin) de prueba para escaneos e IoT
         \App\Models\Bin::firstOrCreate(
             ['id_tacho' => 1],
             [
@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Sembrar algunos premios de prueba para la tienda/catálogo
+        // añadimos algunos premios de prueba para la tienda/catálogo
         \App\Models\Reward::firstOrCreate(
             ['nombre_premio' => 'Descuento en Cafetería'],
             [
