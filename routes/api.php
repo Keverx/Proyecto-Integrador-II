@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:ADMIN')->get('/admin-test', function (Request $request) {
             return response()->json([
                 'status' => 'success',
-                'message' => '¡Hola Admin! Has superado la validación de Sanctum y del Rol.'
+                'message' => '¡Hola Admin! Has superado la validación del Rol.'
             ]);
         });
     });

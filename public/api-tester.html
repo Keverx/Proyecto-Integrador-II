@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoScan API Hub - Interactive Testing Portal</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Google Fonts: Outfit for sleek typography, JetBrains Mono for code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #151d30;
+            --bg-input: #1e2942;
+            --border: #2d3b59;
+            --border-focus: #10b981;
+            
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --primary: #10b981;
+            --primary-hover: #34d399;
+            --primary-rgb: 16, 185, 129;
+            
+            --secondary: #3b82f6;
+            --secondary-hover: #60a5fa;
+            
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --info: #06b6d4;
+            
+            --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', "Courier New", Courier, monospace;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            z-index: 10;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--bg-main);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-config {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-grow: 1;
+            justify-content: flex-end;
+            max-width: 800px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            transition: all 0.25s;
+            flex-grow: 1;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .input-group input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            width: 100%;
+            outline: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 73px);
+            overflow: hidden;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow: visible;
+            }
+            .sidebar {
+                border-right: none !important;
+                border-bottom: 1px solid var(--border);
+                max-height: 400px;
+            }
+        }
+
+        /* Sidebar - Endpoint Navigation */
+        .sidebar {
+            background-color: #0f1626;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .endpoint-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .endpoint-item {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            font-size: 0.85rem;
+            font-weight: 500;
+            gap: 0.5rem;
+        }
+
+        .endpoint-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .endpoint-item.active {
+            background-color: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: var(--primary);
+        }
+
+        .method-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            min-width: 48px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .method-badge.post {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .method-badge.get {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--secondary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .auth-indicator {
+            margin-left: auto;
+            opacity: 0.6;
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            overflow: hidden;
+            background-color: var(--bg-main);
+        }
+
+        /* Quick Info Bar */
+        .info-bar {
+            background-color: rgba(21, 29, 48, 0.6);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .token-badge {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--secondary-hover);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 300px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .token-badge.empty {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            box-shadow: 0 0 8px var(--text-muted);
+        }
+
+        .status-dot.online {
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .status-dot.offline {
+            background-color: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        /* Workspace Panels */
+        .panels-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        @media (max-width: 800px) {
+            .panels-container {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+            .panel {
+                height: 500px !important;
+                border-right: none !important;
+            }
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .panel-left {
+            border-right: 1px solid var(--border);
+        }
+
+        .panel-header {
+            background-color: rgba(21, 29, 48, 0.4);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .panel-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Forms & Inputs */
+        .endpoint-banner {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .banner-route {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .banner-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .form-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 0.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-group label span.required {
+            color: var(--danger);
+            margin-left: 0.15rem;
+        }
+
+        .form-control {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.25rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            outline: none;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-muted);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            font-size: 0.75rem;
+            padding: 0.35rem 0.75rem;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Response Panel */
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            font-weight: 700;
+            font-family: var(--font-mono);
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid transparent;
+        }
+
+        .status-badge.success-code {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.error-code {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .response-time {
+            font-family: var(--font-mono);
+        }
+
+        .response-container {
+            background-color: #0b0f19;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow: auto;
+            flex-grow: 1;
+            position: relative;
+            min-height: 250px;
+        }
+
+        .json-code {
+            font-family: var(--font-mono);
+            font-size: 0.825rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #d1d5db;
+        }
+
+        /* Simple JSON Syntax Highlighting */
+        .json-key { color: #f472b6; }
+        .json-string { color: #34d399; }
+        .json-number { color: #60a5fa; }
+        .json-boolean { color: #fbbf24; }
+        .json-null { color: #9ca3af; }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        /* Flow Simulator Widget */
+        .simulator-widget {
+            background: linear-gradient(145deg, #151d30, #1b253b);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .simulator-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .simulator-tag {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 1rem;
+            text-transform: uppercase;
+        }
+
+        .simulator-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .simulator-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            align-items: flex-start;
+        }
+
+        .flow-step:hover {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.03);
+        }
+
+        .step-num {
+            background-color: var(--border);
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .flow-step:hover .step-num {
+            background-color: var(--primary);
+            color: var(--bg-main);
+        }
+
+        .step-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .step-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .step-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Toast System */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            max-width: 320px;
+        }
+
+        .toast.toast-error {
+            border-left-color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .placeholder-text {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Header -->
+        <header>
+            <div class="logo-section">
+                <div class="logo-icon">E</div>
+                <div class="logo-text">
+                    <h1>EcoScan API Hub</h1>
+                    <p>Developer Testing & Simulation Portal</p>
+                </div>
+            </div>
+            
+            <div class="header-config">
+                <!-- Base URL Switcher -->
+                <div class="input-group">
+                    <label for="baseUrlInput">Base URL</label>
+                    <input type="text" id="baseUrlInput" value="https://fisionortumbes.com/api/v1" placeholder="URL Base del Servidor">
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar">
+                <div>
+                    <h3 class="section-title">Autenticación (Public)</h3>
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item" data-id="login">
+                            <span class="method-badge post">POST</span>
+                            <span>/login</span>
+                        </li>
+                        <li class="endpoint-item" data-id="register">
+                            <span class="method-badge post">POST</span>
+                            <span>/register</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="section-title">Usuario & Perfil (Auth)</h3>
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item" data-id="profile">
+                            <span class="method-badge get">GET</span>
+                            <span>/user-profile</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                        <li class="endpoint-item" data-id="dashboard">
+                            <span class="method-badge get">GET</span>
+                            <span>/dashboard</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="section-title">Gestión de Tachos</h3>
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item" data-id="getPin">
+                            <span class="method-badge get">GET</span>
+                            <span>/tacho/{id}/pin</span>
+                        </li>
+                        <li class="endpoint-item" data-id="linkBin">
+                            <span class="method-badge post">POST</span>
+                            <span>/vincular-tacho</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                        <li class="endpoint-item" data-id="tachoStatus">
+                            <span class="method-badge get">GET</span>
+                            <span>/tacho/status</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                        <li class="endpoint-item" data-id="reciclar">
+                            <span class="method-badge post">POST</span>
+                            <span>/reciclar</span>
+                            <span class="auth-indicator">🔌</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="section-title">Premios & Canjes</h3>
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item" data-id="recompensas">
+                            <span class="method-badge get">GET</span>
+                            <span>/recompensas</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                        <li class="endpoint-item" data-id="canjear">
+                            <span class="method-badge post">POST</span>
+                            <span>/canjear</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                        <li class="endpoint-item" data-id="misCanjes">
+                            <span class="method-badge get">GET</span>
+                            <span>/mis-canjes</span>
+                            <span class="auth-indicator">🔒</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="section-title">Administración (Auth)</h3>
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item" data-id="adminTest">
+                            <span class="method-badge get">GET</span>
+                            <span>/admin-test</span>
+                            <span class="auth-indicator">👑</span>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Working Area -->
+            <div class="workspace">
+                <!-- Info Status Bar -->
+                <div class="info-bar">
+                    <div class="connection-status">
+                        <span class="status-dot" id="connStatusDot"></span>
+                        <span id="connStatusText">Comprobando conexión...</span>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">Sesión:</span>
+                        <div class="token-badge empty" id="tokenDisplay">
+                            Sin Token Bearer
+                        </div>
+                        <button class="btn btn-danger" id="btnClearToken" style="display: none;" onclick="clearToken()">Salir / Limpiar</button>
+                    </div>
+                </div>
+
+                <!-- Split Workspace Panels -->
+                <div class="panels-container">
+                    <!-- Left Panel: Request Parameters -->
+                    <div class="panel panel-left">
+                        <div class="panel-header">
+                            <span class="panel-title">Parámetros de la Solicitud</span>
+                            <span class="simulator-tag" id="requiresAuthTag">Público</span>
+                        </div>
+                        
+                        <div class="panel-body" id="paramsFormContainer">
+                            <!-- Selected endpoint inputs will render here -->
+                            <div class="placeholder-text">
+                                <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                </svg>
+                                <p>Selecciona un endpoint de la barra lateral para empezar a probar.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel: Response & Simulator -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Consola de Respuestas</span>
+                            <div class="response-meta" id="responseMeta" style="display: none;">
+                                <span class="status-badge" id="responseStatus">200 OK</span>
+                                <span class="response-time" id="responseTime">42 ms</span>
+                            </div>
+                        </div>
+
+                        <div class="panel-body" style="background-color: #0b0f19;">
+                            <div class="response-container" id="responseView">
+                                <button class="copy-btn" onclick="copyResponse()" id="btnCopy" style="display: none;">Copiar</button>
+                                <div class="json-code" id="responseContent">// Las respuestas HTTP de la API se mostrarán aquí con resaltado de sintaxis...</div>
+                            </div>
+
+                            <!-- Recycle Flow Simulator -->
+                            <div class="simulator-widget">
+                                <div class="simulator-header">
+                                    <span class="simulator-tag">Eco-Flow</span>
+                                    <h4 class="simulator-title">Simulador de Flujo Completo</h4>
+                                </div>
+                                <p class="simulator-desc">Interactúa con el flujo lógico del sistema inteligente EcoScan en 4 sencillos pasos:</p>
+                                
+                                <div class="flow-steps">
+                                    <div class="flow-step" onclick="runFlowStep(1)">
+                                        <div class="step-num">1</div>
+                                        <div class="step-info">
+                                            <div class="step-title">Generar PIN en Tacho IoT</div>
+                                            <div class="step-desc">Obtiene el pin temporal de un tacho registrado (Ej: Tacho ID 1).</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-step" onclick="runFlowStep(2)">
+                                        <div class="step-num">2</div>
+                                        <div class="step-info">
+                                            <div class="step-title">Usuario Vincula Tacho</div>
+                                            <div class="step-desc">Asocia el tacho a tu cuenta ingresando el PIN que obtuviste.</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-step" onclick="runFlowStep(3)">
+                                        <div class="step-num">3</div>
+                                        <div class="step-info">
+                                            <div class="step-title">Simular Depósito Físico</div>
+                                            <div class="step-desc">El microcontrolador del tacho envía el depósito de reciclaje (Plástico/Papel).</div>
+                                        </div>
+                                    </div>
+                                    <div class="flow-step" onclick="runFlowStep(4)">
+                                        <div class="step-num">4</div>
+                                        <div class="step-info">
+                                            <div class="step-title">Verificar Puntos y Métricas</div>
+                                            <div class="step-desc">Consulta el Dashboard para ver tus eco-puntos incrementados en tiempo real.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Database of Endpoints
+        const endpoints = {
+            login: {
+                name: "Iniciar Sesión",
+                method: "POST",
+                path: "/login",
+                auth: false,
+                desc: "Autentica tus credenciales de usuario y recibe un Bearer Token único para llamadas seguras.",
+                fields: [
+                    { name: "email", type: "email", label: "Correo Electrónico", required: true, default: "kever@gmail.com" },
+                    { name: "password", type: "password", label: "Contraseña", required: true, default: "kever123" }
+                ],
+                onSuccess: (res) => {
+                    if (res && res.data && res.data.token) {
+                        saveToken(res.data.token);
+                        showToast("¡Sesión iniciada con éxito! Token guardado.");
+                    }
+                }
+            },
+            register: {
+                name: "Registro de Usuario",
+                method: "POST",
+                path: "/register",
+                auth: false,
+                desc: "Registra una nueva cuenta de usuario en EcoScan. Al completarse con éxito, se inicia sesión automáticamente.",
+                fields: [
+                    { name: "nombre", type: "text", label: "Nombre Completo", required: true, default: "Demo User" },
+                    { name: "email", type: "email", label: "Correo Electrónico", required: true, default: "" },
+                    { name: "password", type: "password", label: "Contraseña (mínimo 6 caracteres)", required: true, default: "contrasenia123" },
+                    { name: "id_rol", type: "select", label: "Rol", required: false, options: [{value: "1", label: "USER (Ciudadano)"}, {value: "2", label: "ADMIN (Gestor)"}], default: "1" }
+                ],
+                onSuccess: (res) => {
+                    if (res && res.data && res.data.token) {
+                        saveToken(res.data.token);
+                        showToast("¡Usuario registrado con éxito! Token guardado.");
+                    }
+                }
+            },
+            profile: {
+                name: "Obtener Perfil",
+                method: "GET",
+                path: "/user-profile",
+                auth: true,
+                desc: "Recupera la información del perfil del usuario autenticado, incluyendo puntos acumulados y detalles del grupo familiar vinculado.",
+                fields: []
+            },
+            dashboard: {
+                name: "Dashboard de Eco-Puntos",
+                method: "GET",
+                path: "/dashboard",
+                auth: true,
+                desc: "Devuelve estadísticas globales del usuario, historial de reciclaje reciente, eco-puntos y estado ecológico.",
+                fields: []
+            },
+            getPin: {
+                name: "Obtener PIN de Tacho",
+                method: "GET",
+                path: "/tacho/{id}/pin",
+                auth: false,
+                desc: "Endpoint público simulando el dispositivo IoT físico. Lee o regenera el PIN dinámico del tacho para vinculación segura.",
+                fields: [
+                    { name: "id", type: "number", label: "ID del Tacho", required: true, default: "1" }
+                ]
+            },
+            linkBin: {
+                name: "Vincular Tacho a Cuenta",
+                method: "POST",
+                path: "/vincular-tacho",
+                auth: true,
+                desc: "Vincula un tacho inteligente a tu cuenta de usuario o grupo familiar ingresando el PIN actual visible en el tacho.",
+                fields: [
+                    { name: "pin_qr", type: "text", label: "PIN del Tacho", required: true, default: "" }
+                ]
+            },
+            tachoStatus: {
+                name: "Estado de Tacho Vinculado",
+                method: "GET",
+                path: "/tacho/status",
+                auth: true,
+                desc: "Verifica el estado operativo y los niveles de llenado en tiempo real (plástico, papel, orgánico, vidrio) del tacho familiar.",
+                fields: []
+            },
+            reciclar: {
+                name: "Simular Depósito de Reciclaje",
+                method: "POST",
+                path: "/reciclar",
+                auth: false,
+                desc: "Simula el envío de datos de un sensor físico en el tacho tras detectar material reciclable. Suma puntos al usuario vinculado.",
+                fields: [
+                    { name: "tacho_id", type: "number", label: "ID del Tacho", required: true, default: "1" },
+                    { name: "material", type: "select", label: "Tipo de Residuo Depositado", required: true, options: [
+                        { value: "plastico", label: "Plástico (Suma 10 puntos)" },
+                        { value: "papel", label: "Papel / Cartón (Suma 8 puntos)" },
+                        { value: "vidrio", label: "Vidrio (Suma 15 puntos)" },
+                        { value: "organico", label: "Orgánico (Suma 5 puntos)" }
+                    ], default: "plastico" }
+                ]
+            },
+            recompensas: {
+                name: "Lista de Recompensas",
+                method: "GET",
+                path: "/recompensas",
+                auth: true,
+                desc: "Obtiene el catálogo de premios e incentivos disponibles en EcoScan con stock activo y costo en eco-puntos.",
+                fields: []
+            },
+            canjear: {
+                name: "Canjear Eco-Puntos",
+                method: "POST",
+                path: "/canjear",
+                auth: true,
+                desc: "Canjea tus eco-puntos acumulados por un premio seleccionado del catálogo. Descuenta puntos y decrementa el stock.",
+                fields: [
+                    { name: "id_premio", type: "number", label: "ID del Premio a Canjear", required: true, default: "1" }
+                ]
+            },
+            misCanjes: {
+                name: "Historial de Canjes",
+                method: "GET",
+                path: "/mis-canjes",
+                auth: true,
+                desc: "Muestra la bitácora completa de los premios reclamados anteriormente por el usuario con códigos de validación.",
+                fields: []
+            },
+            adminTest: {
+                name: "Prueba de Rol de Administrador",
+                method: "GET",
+                path: "/admin-test",
+                auth: true,
+                desc: "Endpoint protegido adicionalmente con un middleware de rol. Sólo responde con éxito a usuarios registrados con el Rol de ADMIN.",
+                fields: []
+            }
+        };
+
+        let currentActiveEndpoint = null;
+        let lastResponseData = null;
+
+        // Init App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadToken();
+            pingServer();
+            setupBaseUrlListener();
+            setupSidebarClickListeners();
+            
+            // Auto-select first endpoint
+            selectEndpoint('login');
+        });
+
+        function setupBaseUrlListener() {
+            const input = document.getElementById('baseUrlInput');
+            input.addEventListener('change', () => {
+                showToast("URL Base cambiada. Comprobando conexión...");
+                pingServer();
+            });
+        }
+
+        function setupSidebarClickListeners() {
+            document.querySelectorAll('.endpoint-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const endpointId = item.getAttribute('data-id');
+                    selectEndpoint(endpointId);
+                });
+            });
+        }
+
+        // Test Connection Utility
+        async function pingServer() {
+            const baseUrl = document.getElementById('baseUrlInput').value.trim();
+            const statusDot = document.getElementById('connStatusDot');
+            const statusText = document.getElementById('connStatusText');
+            
+            statusDot.className = "status-dot";
+            statusText.innerText = "Comprobando conexión...";
+
+            try {
+                // Ping utilizing the public obtenerPin endpoint with id=1
+                const startTime = performance.now();
+                const response = await fetch(`${baseUrl}/tacho/1/pin`, { method: 'GET' });
+                const endTime = performance.now();
+                
+                if (response.ok || response.status === 404) { // 404 is still a valid Laravel response
+                    statusDot.className = "status-dot online";
+                    statusText.innerText = `Servidor Online (${Math.round(endTime - startTime)}ms)`;
+                } else {
+                    statusDot.className = "status-dot offline";
+                    statusText.innerText = `Error HTTP ${response.status}`;
+                }
+            } catch (err) {
+                statusDot.className = "status-dot offline";
+                statusText.innerText = "Servidor Desconectado / CORS Error";
+            }
+        }
+
+        // Token Management
+        function saveToken(token) {
+            localStorage.setItem('ecoscan_api_token', token);
+            updateTokenUI(token);
+        }
+
+        function loadToken() {
+            const token = localStorage.getItem('ecoscan_api_token');
+            updateTokenUI(token);
+        }
+
+        function clearToken() {
+            localStorage.removeItem('ecoscan_api_token');
+            updateTokenUI(null);
+            showToast("Token de autenticación eliminado.");
+            
+            // Refresh fields to show lock warning
+            if (currentActiveEndpoint && endpoints[currentActiveEndpoint].auth) {
+                selectEndpoint(currentActiveEndpoint);
+            }
+        }
+
+        function updateTokenUI(token) {
+            const display = document.getElementById('tokenDisplay');
+            const clearBtn = document.getElementById('btnClearToken');
+            
+            if (token) {
+                display.innerText = `Bearer ${token.substring(0, 15)}...`;
+                display.className = "token-badge";
+                display.title = token;
+                clearBtn.style.display = "block";
+            } else {
+                display.innerText = "Sin Token Bearer";
+                display.className = "token-badge empty";
+                display.title = "";
+                clearBtn.style.display = "none";
+            }
+        }
+
+        function getAuthToken() {
+            return localStorage.getItem('ecoscan_api_token');
+        }
+
+        // Selection
+        function selectEndpoint(id) {
+            currentActiveEndpoint = id;
+            const endpoint = endpoints[id];
+            
+            // Active Sidebar Item
+            document.querySelectorAll('.endpoint-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-id') === id) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Update Auth Badge
+            const authTag = document.getElementById('requiresAuthTag');
+            if (endpoint.auth) {
+                authTag.innerText = "🔒 Requiere Token";
+                authTag.style.backgroundColor = "rgba(245, 158, 11, 0.15)";
+                authTag.style.color = "var(--warning)";
+            } else if (id === 'reciclar') {
+                authTag.innerText = "🔌 IoT / Dispositivo";
+                authTag.style.backgroundColor = "rgba(6, 182, 212, 0.15)";
+                authTag.style.color = "var(--info)";
+            } else {
+                authTag.innerText = "Público";
+                authTag.style.backgroundColor = "rgba(16, 185, 129, 0.15)";
+                authTag.style.color = "var(--primary)";
+            }
+
+            // Render Form Inputs
+            renderForm(id);
+        }
+
+        function renderForm(id) {
+            const endpoint = endpoints[id];
+            const container = document.getElementById('paramsFormContainer');
+            
+            let html = `
+                <div class="endpoint-banner">
+                    <div class="banner-route">
+                        <span class="method-badge ${endpoint.method.toLowerCase()}">${endpoint.method}</span>
+                        <span>${endpoint.path}</span>
+                    </div>
+                    <div class="banner-description">${endpoint.desc}</div>
+                </div>
+            `;
+
+            if (endpoint.auth && !getAuthToken()) {
+                html += `
+                    <div style="background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 0.5rem; padding: 1rem; color: #fca5a5; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <span style="font-weight: 700;">⚠️ Advertencia de Autenticación</span>
+                        Este endpoint requiere un Token Bearer. Inicia sesión (/login) o regístrate (/register) primero para guardar un token válido, de lo contrario recibirás una respuesta 401 Unauthorized.
+                    </div>
+                `;
+            }
+
+            if (endpoint.fields && endpoint.fields.length > 0) {
+                html += `<h4 class="form-section-title">Parámetros</h4>`;
+                
+                endpoint.fields.forEach(field => {
+                    const reqStar = field.required ? `<span class="required">*</span>` : '';
+                    
+                    html += `
+                        <div class="form-group">
+                            <label for="field_${field.name}">${field.label} ${reqStar}</label>
+                    `;
+
+                    if (field.type === 'select') {
+                        html += `
+                            <select class="form-control" id="field_${field.name}" name="${field.name}">
+                                ${field.options.map(opt => `
+                                    <option value="${opt.value}" ${field.default === opt.value ? 'selected' : ''}>${opt.label}</option>
+                                `).join('')}
+                            </select>
+                        `;
+                    } else {
+                        html += `
+                            <input class="form-control" type="${field.type}" id="field_${field.name}" name="${field.name}" value="${field.default}" placeholder="${field.label}">
+                        `;
+                    }
+
+                    html += `</div>`;
+                });
+            } else {
+                html += `
+                    <div style="text-align: center; padding: 2rem 1rem; border: 1px dashed var(--border); border-radius: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                        Este endpoint no requiere parámetros en el cuerpo ni en la URL.
+                    </div>
+                `;
+            }
+
+            // Actions Button Row
+            html += `
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="sendApiRequest('${id}')" id="btnSubmitRequest" style="flex-grow: 1;">
+                        <span>Ejecutar Petición</span>
+                    </button>
+                    ${endpoint.fields.length > 0 ? `<button class="btn btn-secondary" onclick="resetForm('${id}')">Limpiar</button>` : ''}
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function resetForm(id) {
+            renderForm(id);
+        }
+
+        // Send API Request
+        async function sendApiRequest(id) {
+            const endpoint = endpoints[id];
+            const baseUrl = document.getElementById('baseUrlInput').value.trim();
+            const submitBtn = document.getElementById('btnSubmitRequest');
+            
+            // Collect Form Inputs
+            let bodyData = {};
+            let pathUrl = endpoint.path;
+            
+            const inputs = document.querySelectorAll('#paramsFormContainer [name]');
+            inputs.forEach(input => {
+                const name = input.name;
+                const value = input.value;
+                
+                // If it's a URL placeholder like {id}
+                if (pathUrl.includes(`{${name}}`)) {
+                    pathUrl = pathUrl.replace(`{${name}}`, encodeURIComponent(value));
+                } else {
+                    bodyData[name] = value;
+                }
+            });
+
+            // Prepare Request Headers & Settings
+            const headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            };
+
+            const token = getAuthToken();
+            if (endpoint.auth && token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const reqOptions = {
+                method: endpoint.method,
+                headers: headers
+            };
+
+            if (endpoint.method !== 'GET' && Object.keys(bodyData).length > 0) {
+                reqOptions.body = JSON.stringify(bodyData);
+            }
+
+            // UI Feedback: Loading state
+            submitBtn.disabled = true;
+            const originalBtnContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = `<span class="spinner"></span> <span>Enviando...</span>`;
+
+            // Reset console
+            document.getElementById('responseMeta').style.display = "none";
+            document.getElementById('btnCopy').style.display = "none";
+            document.getElementById('responseContent').innerText = "Procesando respuesta...";
+
+            const startTime = performance.now();
+            try {
+                const fullUrl = `${baseUrl}${pathUrl}`;
+                const response = await fetch(fullUrl, reqOptions);
+                const endTime = performance.now();
+                const responseTimeMs = Math.round(endTime - startTime);
+
+                const responseText = await response.text();
+                let jsonParsed = null;
+                try {
+                    jsonParsed = JSON.parse(responseText);
+                    lastResponseData = jsonParsed;
+                } catch (e) {
+                    lastResponseData = responseText;
+                }
+
+                // Show metadata
+                const metaEl = document.getElementById('responseMeta');
+                const statusEl = document.getElementById('responseStatus');
+                const timeEl = document.getElementById('responseTime');
+                
+                metaEl.style.display = "flex";
+                timeEl.innerText = `${responseTimeMs} ms`;
+                
+                statusEl.innerText = `${response.status} ${response.statusText || getHttpStatusText(response.status)}`;
+                if (response.ok) {
+                    statusEl.className = "status-badge success-code";
+                    showToast(`API: Solicitud completada exitosamente (${response.status})`);
+                    
+                    // Run custom Success callback (like auto-saving token)
+                    if (endpoint.onSuccess && jsonParsed) {
+                        endpoint.onSuccess(jsonParsed);
+                    }
+                } else {
+                    statusEl.className = "status-badge error-code";
+                    showToast(`API Error: Servidor devolvió código ${response.status}`, "error");
+                }
+
+                // Render Beautiful JSON
+                const formattedJson = jsonParsed 
+                    ? syntaxHighlightJson(jsonParsed) 
+                    : responseText;
+                
+                document.getElementById('responseContent').innerHTML = formattedJson;
+                document.getElementById('btnCopy').style.display = "block";
+
+            } catch (err) {
+                const endTime = performance.now();
+                document.getElementById('responseContent').innerHTML = `
+                    <div style="color: var(--danger); font-weight: 500; font-family: var(--font-sans);">
+                        ❌ Falló la conexión al servidor API de EcoScan.
+                        
+                        <div style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.85rem; font-family: var(--font-mono); line-height: 1.6;">
+                            Motivos posibles:
+                            1. CORS bloqueando la petición cross-origin de tu navegador (Verifica que config/cors.php tenga allowed_origins [*]).
+                            2. El servidor en ${baseUrl} no está activo o la ruta es incorrecta.
+                            3. Problema de red o certificado SSL inválido.
+                            
+                            Detalle del error: ${err.message}
+                        </div>
+                    </div>
+                `;
+                showToast("Error de conexión al servidor", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+                pingServer(); // Refresh ping status indicator
+            }
+        }
+
+        function getHttpStatusText(code) {
+            const map = {
+                200: "OK", 201: "Created", 204: "No Content",
+                400: "Bad Request", 401: "Unauthorized", 403: "Forbidden",
+                404: "Not Found", 422: "Unprocessable Entity", 500: "Internal Server Error"
+            };
+            return map[code] || "Response";
+        }
+
+        // Beautiful JSON syntax highlighter
+        function syntaxHighlightJson(json) {
+            if (typeof json !== 'string') {
+                json = JSON.stringify(json, null, 4);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Clipboard Copy
+        function copyResponse() {
+            if (!lastResponseData) return;
+            const textToCopy = typeof lastResponseData === 'object' 
+                ? JSON.stringify(lastResponseData, null, 2) 
+                : lastResponseData;
+                
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => showToast("Copiado al portapapeles."))
+                .catch(() => showToast("No se pudo copiar.", "error"));
+        }
+
+        // Toasts
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'error' ? 'toast-error' : ''}`;
+            
+            const icon = type === 'success' ? '✓' : '⚠';
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Flow step runner
+        async function runFlowStep(step) {
+            if (step === 1) {
+                showToast("Paso 1: Generando PIN del Tacho ID 1...");
+                selectEndpoint('getPin');
+                document.getElementById('field_id').value = "1";
+                await sendApiRequest('getPin');
+                
+                if (lastResponseData && lastResponseData.status === 'success' && lastResponseData.pin_actual) {
+                    showToast(`¡Éxito! PIN obtenido: ${lastResponseData.pin_actual}`);
+                    // Save pin dynamically for step 2 prefill
+                    window.ecoscanLastPin = lastResponseData.pin_actual;
+                }
+            } 
+            else if (step === 2) {
+                showToast("Paso 2: Vinculando Tacho a la cuenta...");
+                if (!getAuthToken()) {
+                    showToast("Error: Primero debes Iniciar Sesión para tener un token.", "error");
+                    selectEndpoint('login');
+                    return;
+                }
+                selectEndpoint('linkBin');
+                if (window.ecoscanLastPin) {
+                    document.getElementById('field_pin_qr').value = window.ecoscanLastPin;
+                } else {
+                    showToast("No se encontró PIN automático. Escríbelo manualmente.", "warning");
+                }
+            } 
+            else if (step === 3) {
+                showToast("Paso 3: Enviando señal de Reciclaje (Simulando IoT)...");
+                selectEndpoint('reciclar');
+                document.getElementById('field_tacho_id').value = "1";
+                // Keep paper or plastic
+            } 
+            else if (step === 4) {
+                showToast("Paso 4: Consultando Métricas Actualizadas en Dashboard...");
+                if (!getAuthToken()) {
+                    showToast("Error: Requiere sesión activa.", "error");
+                    selectEndpoint('login');
+                    return;
+                }
+                selectEndpoint('dashboard');
+                await sendApiRequest('dashboard');
+            }
+        }
+    </script>
+</body>
+</html>
