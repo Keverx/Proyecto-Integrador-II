@@ -21,12 +21,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/vincular-tacho', [RecycleController::class, 'vincularTacho']); 
         Route::get('/tacho/status', [TachoController::class, 'status']);
         
-        // Recompensas y Canjes
+
         Route::get('/recompensas', [\App\Http\Controllers\API\v1\RewardController::class, 'index']);
         Route::post('/canjear', [\App\Http\Controllers\API\v1\RewardController::class, 'canjear']);
         Route::get('/mis-canjes', [\App\Http\Controllers\API\v1\RewardController::class, 'misCanjes']);
 
-        // Dashboard e Historial
         Route::get('/dashboard', [\App\Http\Controllers\API\v1\DashboardController::class, 'index']);
         
         Route::middleware('role:ADMIN')->get('/admin-test', function (Request $request) {

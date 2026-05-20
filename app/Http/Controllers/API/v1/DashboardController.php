@@ -10,22 +10,17 @@ class DashboardController extends Controller
 {
     protected $dashboardService;
 
-    /**
-     * Injecting the DashboardService (SOLID - Dependency Inversion Principle)
-     */
+
     public function __construct(DashboardService $dashboardService)
     {
         $this->dashboardService = $dashboardService;
     }
 
-    /**
-     * Get the dashboard metrics and recent history for the authenticated user.
-     */
+
     public function index(Request $request)
     {
         $user = $request->user();
 
-        // Single Responsibility Principle: Controller delegates to Service
         $metricas = $this->dashboardService->getUserMetrics($user->id_usuario);
         $historial = $this->dashboardService->getRecentHistory($user->id_usuario);
 

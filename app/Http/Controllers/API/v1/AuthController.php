@@ -49,7 +49,6 @@ class AuthController extends Controller
     {
         $user = $request->user();
         
-        // Cargar el rol para asegurarnos de poder mandarlo
         $user->load('role');
 
         $responseData = [
@@ -62,7 +61,6 @@ class AuthController extends Controller
             'fecha_registro' => $user->fecha_registro ?? now()->toIso8601String(),
         ];
 
-        // Obtener el primer grupo del usuario y mapearlo como "familia" para el frontend
         $grupo = $user->grupos()->with('tachos')->first();
 
         if ($grupo) {

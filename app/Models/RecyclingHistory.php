@@ -8,7 +8,7 @@ class RecyclingHistory extends Model
 {
     protected $table = 'historial_reciclaje';
     protected $primaryKey = 'id_transaccion';
-    public $timestamps = false; // Tu SQL solo tiene fecha_hora
+    public $timestamps = false; 
 
     protected $fillable = [
         'id_usuario',

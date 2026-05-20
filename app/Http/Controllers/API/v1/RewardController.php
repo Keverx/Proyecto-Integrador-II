@@ -37,7 +37,6 @@ class RewardController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Premio agotado.'], 400);
             }
 
-            // Validar puntos del usuario
             if ($user->puntos < $reward->costo_puntos) {
                 return response()->json(['status' => 'error', 'message' => 'Puntos insuficientes.'], 400);
             }
@@ -50,7 +49,7 @@ class RewardController extends Controller
                 'fecha_canje' => now()
             ]);
 
-            // Registrar el egreso de puntos
+
             DB::table('transacciones_puntos')->insert([
                 'id_usuario' => $user->id_usuario,
                 'tipo_movimiento' => 'EGRESO',
@@ -59,7 +58,6 @@ class RewardController extends Controller
                 'fecha_movimiento' => now()
             ]);
 
-            // Disminuir stock
             $reward->stock_disponible -= 1;
             $reward->save();
 
