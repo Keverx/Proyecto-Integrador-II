@@ -20,6 +20,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\RecycleServiceInterface::class,
             \App\Services\RecycleService::class
         );
+
+        $this->app->bind(
+            \App\Services\Contracts\RecyclingHistoryQueriesInterface::class,
+            \App\Services\RecyclingHistoryQueries::class
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\HistoryCalculatorInterface::class,
+            \App\Services\HistoryCalculator::class
+        );
     }
 
     /**

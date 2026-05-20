@@ -23,4 +23,9 @@ class Bin extends Model
         'ultima_conexion',
         'fecha_registro'
     ];
+
+    public function nivelesLlenado()
+    {
+        return $this->hasMany(NivelLlenado::class, 'id_tacho', 'id_tacho');
+    }
 }

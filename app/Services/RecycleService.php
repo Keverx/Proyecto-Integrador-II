@@ -13,7 +13,6 @@ use Exception;
 
 class RecycleService implements RecycleServiceInterface
 {
-    // Tiempo de vida de la sesión en el tacho (en segundos)
     private const SESSION_TTL = 60;
 
     public function linkBin(string $pin, int $userId)

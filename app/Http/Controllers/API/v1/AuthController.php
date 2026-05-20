@@ -12,7 +12,6 @@ use Exception;
 class AuthController extends Controller
 {
     protected $authService;
-    // DIP: Inyección de Dependencias
     public function __construct(AuthServiceInterface $authService)
     {
         $this->authService = $authService;
@@ -48,17 +47,40 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
-        // Con auth:sanctum, Laravel ya validó el token e inyectó al usuario en $request
         $user = $request->user();
+        
+        // Cargar el rol para asegurarnos de poder mandarlo
+        $user->load('role');
+
+        $responseData = [
+            'id_usuario' => $user->id_usuario,
+            'nombre' => $user->nombre,
+            'email' => $user->email,
+            'estado_cuenta' => $user->estado_cuenta,
+            'rol' => $user->role ? $user->role->nombre : 'USER',
+            'eco_puntos_personales' => $user->puntos,
+            'fecha_registro' => $user->fecha_registro ?? now()->toIso8601String(),
+        ];
+
+        // Obtener el primer grupo del usuario y mapearlo como "familia" para el frontend
+        $grupo = $user->grupos()->with('tachos')->first();
+
+        if ($grupo) {
+            $tachoPrincipal = $grupo->tachos->first();
+            
+            $responseData['id_familia'] = $grupo->id_grupo;
+            $responseData['familia'] = [
+                'id_familia' => $grupo->id_grupo,
+                'nombre_familia' => $grupo->nombre_grupo,
+                'id_tacho_asignado' => $tachoPrincipal ? $tachoPrincipal->id_tacho : null,
+                'puntos_grupales' => $grupo->puntos_grupales,
+                'fecha_creacion' => $grupo->fecha_creacion ? \Carbon\Carbon::parse($grupo->fecha_creacion)->toIso8601String() : null,
+            ];
+        }
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'nombre' => $user->nombre,
-                'email' => $user->email,
-                'puntos' => $user->puntos,
-                'estado' => $user->estado_cuenta
-            ]
+            'data' => $responseData
         ]);
     }
 }
