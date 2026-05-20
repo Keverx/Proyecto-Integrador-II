@@ -16,4 +16,9 @@ class RecyclingHistory extends Model
         'id_tipo_residuo',
         'fecha_hora'
     ];
+
+    public function wasteType()
+    {
+        return $this->belongsTo(WasteType::class, 'id_tipo_residuo', 'id_tipo_residuo');
+    }
 }

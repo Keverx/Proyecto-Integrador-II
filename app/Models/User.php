@@ -60,4 +60,10 @@ class User extends Authenticatable
     {
         return $this->role && strtoupper($this->role->nombre) === strtoupper($role);
     }
+
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'usuario_grupos', 'id_usuario', 'id_grupo')
+                    ->withPivot('rol_en_grupo', 'fecha_union');
+    }
 }
