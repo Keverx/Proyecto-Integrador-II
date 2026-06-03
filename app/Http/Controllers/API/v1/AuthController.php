@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\VerifyEmailRequest;
 use App\Services\Contracts\AuthServiceInterface;
 use Illuminate\Http\Request;
 use Exception;
@@ -39,6 +40,34 @@ class AuthController extends Controller
                 'status' => 'success',
                 'message' => '¡Bienvenido a EcoScan!',
                 'data' => $data
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);
+        }
+    }
+
+    public function verifyEmail(VerifyEmailRequest $request)
+    {
+        try {
+            $this->authService->verifyEmail($request->email, $request->codigo_verificacion);
+            return response()->json([
+                'status' => 'success',
+                'message' => '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);
+        }
+    }
+
+    public function resendVerificationCode(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:usuarios,email']);
+
+        try {
+            $this->authService->resendCode($request->email);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Se ha enviado un nuevo código de verificación a tu correo.'
             ]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);

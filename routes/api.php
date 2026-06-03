@@ -11,17 +11,20 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     
+    Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
+    Route::post('/resend-verification', [AuthController::class, 'resendVerificationCode']);
+    
     Route::post('/reciclar', [RecycleController::class, 'procesarReciclaje']); 
     Route::get('/tacho/{id}/pin', [RecycleController::class, 'obtenerPin']); 
 
     Route::middleware('auth:sanctum')->group(function () {
         
         Route::get('/user-profile', [AuthController::class, 'profile']);
+        Route::put('/user-profile', [\App\Http\Controllers\API\v1\UserController::class, 'update']);
        
         Route::post('/vincular-tacho', [RecycleController::class, 'vincularTacho']); 
         Route::get('/tacho/status', [TachoController::class, 'status']);
         
-
         Route::get('/recompensas', [\App\Http\Controllers\API\v1\RewardController::class, 'index']);
         Route::post('/canjear', [\App\Http\Controllers\API\v1\RewardController::class, 'canjear']);
         Route::get('/mis-canjes', [\App\Http\Controllers\API\v1\RewardController::class, 'misCanjes']);

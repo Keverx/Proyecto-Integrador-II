@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NivelLlenado extends Model
 {
-    protected $table = 'niveles_llenado';
+    protected $table = 'niveles_tacho';
     protected $primaryKey = 'id_nivel';
     public $timestamps = false;
 
