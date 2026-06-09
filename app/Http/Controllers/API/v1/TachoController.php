@@ -26,7 +26,7 @@ class TachoController extends Controller
         ];
 
         // Buscar el primer grupo del usuario y su primer tacho
-        $grupo = $user->grupos()->with('tachos.nivelesLlenado.tipoResiduo')->first();
+        $grupo = $user->families()->with('tachos.nivelesLlenado.tipoResiduo')->first();
         
         $tachoData = null;
 

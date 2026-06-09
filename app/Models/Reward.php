@@ -16,7 +16,6 @@ class Reward extends Model
         'costo_puntos',
         'tipo_premio',
         'stock_disponible',
-        'icon',
-        'color'
+        'categoria'
     ];
 }

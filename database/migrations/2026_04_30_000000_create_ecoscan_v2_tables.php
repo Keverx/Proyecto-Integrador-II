@@ -122,6 +122,7 @@ return new class extends Migration
             $table->integer('costo_puntos');
             $table->enum('tipo_premio', ['INDIVIDUAL', 'GRUPAL']);
             $table->integer('stock_disponible')->default(0)->nullable();
+            $table->string('categoria', 50)->nullable();
         });
 
         Schema::create('canjes', function (Blueprint $table) {

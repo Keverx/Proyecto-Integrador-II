@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-
         User::factory()->create([
             'nombre' => 'Test User',
             'email' => 'test@example.com',
@@ -33,7 +32,7 @@ class DatabaseSeeder extends Seeder
             ['puntos_otorgados' => 15, 'descripcion' => 'Botellas, frascos y recipientes de vidrio']
         );
 
-        // añadimos un Tacho (Bin) de prueba para escaneos e IoT
+        // añadimos un Tacho de prueba para escaneos e IoT
         \App\Models\Bin::firstOrCreate(
             ['id_tacho' => 1],
             [
@@ -42,25 +41,7 @@ class DatabaseSeeder extends Seeder
                 'estado_operativo' => 'ACTIVO'
             ]
         );
-
-        // añadimos algunos premios de prueba para la tienda/catálogo
-        \App\Models\Reward::firstOrCreate(
-            ['nombre_premio' => 'Descuento en Cafetería'],
-            [
-                'descripcion' => 'Obtén un 20% de descuento en consumos mínimos de S/. 15.',
-                'costo_puntos' => 50,
-                'tipo_premio' => 'INDIVIDUAL',
-                'stock_disponible' => 100
-            ]
-        );
-        \App\Models\Reward::firstOrCreate(
-            ['nombre_premio' => 'Cuaderno Ecológico'],
-            [
-                'descripcion' => 'Cuaderno de tapa dura hecho 100% de material reciclado.',
-                'costo_puntos' => 120,
-                'tipo_premio' => 'INDIVIDUAL',
-                'stock_disponible' => 50
-            ]
-        );
+        // llamamos al seeder de premios para la tienda/catálogo
+        $this->call(RewardSeeder::class);
     }
 }

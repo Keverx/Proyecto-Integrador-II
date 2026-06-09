@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\RecycleController;
 use App\Http\Controllers\API\v1\TachoController;
+use App\Http\Controllers\API\v1\FamilyController;
 
 Route::prefix('v1')->group(function () {
 
@@ -14,10 +15,16 @@ Route::prefix('v1')->group(function () {
     Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
     Route::post('/resend-verification', [AuthController::class, 'resendVerificationCode']);
     
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    
     Route::post('/reciclar', [RecycleController::class, 'procesarReciclaje']); 
     Route::get('/tacho/{id}/pin', [RecycleController::class, 'obtenerPin']); 
 
     Route::middleware('auth:sanctum')->group(function () {
+        
+        Route::post('/logout', [AuthController::class, 'logout']);
         
         Route::get('/user-profile', [AuthController::class, 'profile']);
         Route::put('/user-profile', [\App\Http\Controllers\API\v1\UserController::class, 'update']);
@@ -28,6 +35,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/recompensas', [\App\Http\Controllers\API\v1\RewardController::class, 'index']);
         Route::post('/canjear', [\App\Http\Controllers\API\v1\RewardController::class, 'canjear']);
         Route::get('/mis-canjes', [\App\Http\Controllers\API\v1\RewardController::class, 'misCanjes']);
+
+        Route::get('/grupos', [FamilyController::class, 'index']);
+        Route::post('/grupos', [FamilyController::class, 'store']);
+        Route::post('/grupos/join', [FamilyController::class, 'join']);
+        Route::get('/grupos/{id}', [FamilyController::class, 'show']);
+        Route::delete('/grupos/{id}/leave', [FamilyController::class, 'leave']);
+        Route::delete('/grupos/{id}/members/{userId}', [FamilyController::class, 'removeMember']);
 
         Route::get('/dashboard', [\App\Http\Controllers\API\v1\DashboardController::class, 'index']);
         

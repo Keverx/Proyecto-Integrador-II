@@ -30,7 +30,6 @@ class User extends Authenticatable
         'codigo_verificacion',
     ];
 
-
     public function getAuthPassword()
     {
         return $this->password_hash;
@@ -62,9 +61,9 @@ class User extends Authenticatable
         return $this->role && strtoupper($this->role->nombre) === strtoupper($role);
     }
 
-    public function grupos()
+    public function families()
     {
-        return $this->belongsToMany(Grupo::class, 'usuario_grupos', 'id_usuario', 'id_grupo')
+        return $this->belongsToMany(Family::class, 'usuario_grupos', 'id_usuario', 'id_grupo')
                     ->withPivot('rol_en_grupo', 'fecha_union');
     }
 }

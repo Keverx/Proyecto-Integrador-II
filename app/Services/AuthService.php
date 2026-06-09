@@ -8,6 +8,7 @@ use App\Services\Contracts\AuthServiceInterface;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationMail;
+use App\Mail\PasswordResetMail;
 
 class AuthService implements AuthServiceInterface
 {
@@ -25,7 +26,7 @@ class AuthService implements AuthServiceInterface
         ]);
 
         try {
-            Mail::to($user->email)->send(new VerificationMail($codigoVerificacion, $user->nombre));
+            Mail::to($user->email)->queue(new VerificationMail($codigoVerificacion, $user->nombre));
         } catch (Exception $e) {
             // Ignoramos el error de correo en local si no está bien configurado para no bloquear el registro,
             // pero idealmente en producción debería registrarse en los logs.
@@ -102,9 +103,59 @@ class AuthService implements AuthServiceInterface
         $user->codigo_verificacion = $codigoVerificacion;
         $user->save();
 
-        Mail::to($user->email)->send(new VerificationMail($codigoVerificacion, $user->nombre));
+        Mail::to($user->email)->queue(new VerificationMail($codigoVerificacion, $user->nombre));
 
         return true;
     }
 
+    public function forgotPassword(string $email)
+    {
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            throw new Exception('Usuario no encontrado', 404);
+        }
+
+        $codigo = sprintf("%06d", mt_rand(1, 999999));
+        
+        $user->token_recuperacion = $codigo;
+        $user->expiracion_token = now()->addMinutes(15);
+        $user->save();
+
+        Mail::to($user->email)->queue(new PasswordResetMail($codigo, $user->nombre));
+
+        return true;
+    }
+
+    public function verifyResetCode(string $email, string $code)
+    {
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            throw new Exception('Usuario no encontrado', 404);
+        }
+
+        if ($user->token_recuperacion !== $code) {
+            throw new Exception('El código de restablecimiento es incorrecto', 400);
+        }
+
+        if (now()->greaterThan($user->expiracion_token)) {
+            throw new Exception('El código de restablecimiento ha expirado', 400);
+        }
+
+        return true;
+    }
+
+    public function resetPassword(string $email, string $code, string $password)
+    {
+        $this->verifyResetCode($email, $code);
+
+        $user = User::where('email', $email)->first();
+        $user->password_hash = Hash::make($password);
+        $user->token_recuperacion = null;
+        $user->expiracion_token = null;
+        $user->save();
+
+        return true;
+    }
 }

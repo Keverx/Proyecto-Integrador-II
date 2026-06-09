@@ -90,7 +90,7 @@ class AuthController extends Controller
             'fecha_registro' => $user->fecha_registro ?? now()->toIso8601String(),
         ];
 
-        $grupo = $user->grupos()->with('tachos')->first();
+        $grupo = $user->families()->with('tachos')->first();
 
         if ($grupo) {
             $tachoPrincipal = $grupo->tachos->first();
@@ -109,5 +109,70 @@ class AuthController extends Controller
             'status' => 'success',
             'data' => $responseData
         ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:usuarios,email']);
+
+        try {
+            $this->authService->forgotPassword($request->email);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Se ha enviado un código de restablecimiento a tu correo.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);
+        }
+    }
+
+    public function verifyResetCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:usuarios,email',
+            'codigo' => 'required|string|size:6'
+        ]);
+
+        try {
+            $this->authService->verifyResetCode($request->email, $request->codigo);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Código verificado correctamente.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:usuarios,email',
+            'codigo' => 'required|string|size:6',
+            'password' => 'required|string|min:6'
+        ]);
+
+        try {
+            $this->authService->resetPassword($request->email, $request->codigo, $request->password);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Contraseña restablecida exitosamente.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode() ?: 400);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sesión cerrada correctamente.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Hubo un error al cerrar sesión.'], 500);
+        }
     }
 }
