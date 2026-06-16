@@ -30,7 +30,7 @@ class RecycleService implements RecycleServiceInterface
         Cache::put('sesion_tacho_' . $tacho->id_tacho, $user->id_usuario, self::SESSION_TTL);
         
         // Limpiamos el historial de reciclajes de la última sesión.
-        // NOTA: Usamos Cache::forever para que la lista persista incluso
+        // Usamos Cache::forever para que la lista persista incluso
         // si el usuario cierra la aplicación o cierra sesión en el dispositivo móvil.
         // Solo se borra/formatea cuando el usuario vuelve a escanear un código QR.
         Cache::forever('sesion_items_' . $user->id_usuario, []);
