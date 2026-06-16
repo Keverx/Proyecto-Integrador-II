@@ -76,11 +76,15 @@ class TachoController extends Controller
             ];
         }
 
+        // Leer el historial de la sesión actual
+        $sessionItems = \Illuminate\Support\Facades\Cache::get('sesion_items_' . $user->id_usuario, []);
+
         return response()->json([
             'status' => 'success',
             'data' => [
                 'tacho' => $tachoData,
-                'metricas' => $metricas
+                'metricas' => $metricas,
+                'sesion_actual' => $sessionItems
             ]
         ]);
     }

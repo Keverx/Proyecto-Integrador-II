@@ -28,6 +28,12 @@ class RecycleService implements RecycleServiceInterface
         }
 
         Cache::put('sesion_tacho_' . $tacho->id_tacho, $user->id_usuario, self::SESSION_TTL);
+        
+        // Limpiamos el historial de reciclajes de la última sesión.
+        // NOTA: Usamos Cache::forever para que la lista persista incluso
+        // si el usuario cierra la aplicación o cierra sesión en el dispositivo móvil.
+        // Solo se borra/formatea cuando el usuario vuelve a escanear un código QR.
+        Cache::forever('sesion_items_' . $user->id_usuario, []);
 
         $nuevoPin = rand(1000, 9999);
         $tacho->pin_actual = (string)$nuevoPin;
@@ -69,6 +75,16 @@ class RecycleService implements RecycleServiceInterface
         ]);
 
         Cache::put('sesion_tacho_' . $tachoId, $user->id_usuario, self::SESSION_TTL);
+
+        // Guardamos el material en la lista temporal de la sesión actual
+        $items = Cache::get('sesion_items_' . $user->id_usuario, []);
+        // Insertamos al inicio (unshift) para que el más reciente salga primero
+        array_unshift($items, [
+            'material' => ucfirst($materialClean),
+            'puntos' => $puntosGanados,
+            'hora' => now()->format('H:i:s')
+        ]);
+        Cache::forever('sesion_items_' . $user->id_usuario, $items);
 
         return [
             'usuario' => $user->nombre,
