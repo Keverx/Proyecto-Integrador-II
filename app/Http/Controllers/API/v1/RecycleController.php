@@ -39,6 +39,7 @@ class RecycleController extends Controller
 
     public function procesarReciclaje(ProcessRecycleRequest $request)
     {
+        \Illuminate\Support\Facades\Log::info("Petición de Reciclaje recibida:", $request->all());
         try {
             $data = $this->recycleService->processRecycle($request->tacho_id, $request->material);
             return response()->json([

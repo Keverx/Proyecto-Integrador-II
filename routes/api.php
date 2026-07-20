@@ -6,6 +6,7 @@ use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\RecycleController;
 use App\Http\Controllers\API\v1\TachoController;
 use App\Http\Controllers\API\v1\FamilyController;
+use App\Http\Controllers\API\v1\IncidenciaController;
 
 Route::prefix('v1')->group(function () {
 
@@ -44,6 +45,9 @@ Route::prefix('v1')->group(function () {
         Route::delete('/grupos/{id}/members/{userId}', [FamilyController::class, 'removeMember']);
 
         Route::get('/dashboard', [\App\Http\Controllers\API\v1\DashboardController::class, 'index']);
+
+        Route::get('/incidencias', [IncidenciaController::class, 'index']);
+        Route::post('/incidencias', [IncidenciaController::class, 'store']);
         
         Route::middleware('role:ADMIN')->get('/admin-test', function (Request $request) {
             return response()->json([
